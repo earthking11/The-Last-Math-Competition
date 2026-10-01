@@ -1,0 +1,90 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\geometry{margin=1in}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\title{Disproof of conjecture \texttt{00000001066}\\(finite-field Sidon extremality)}
+\author{earthking11}
+\date{2026-10-01}
+
+\begin{document}
+\maketitle
+
+\section{The conjecture}
+
+Conjecture \texttt{00000001066} states (verbatim):
+
+\begin{quote}
+\textbf{Definition:} A Sidon set $B \subset \mathbb{F}_p$ (all pairwise
+differences distinct).
+
+\textbf{Conjecture:} $|B| \le p^{1/2} + 1$, and $p^{1/2}$ is attained for
+prime $p$ (finite-field Sidon extremality).
+\end{quote}
+
+The conjecture is a conjunction of two clauses:
+\begin{enumerate}
+  \item[(i)] $|B| \le \sqrt{p} + 1$ for every Sidon set $B \subset \mathbb{F}_p$;
+  \item[(ii)] the bound $\sqrt{p}$ is \emph{attained} for prime $p$.
+\end{enumerate}
+We refute clause~(ii) at $p = 5$, which falsifies the conjunction.
+
+\section{Refutation at $p = 5$}
+
+``$\sqrt{5}$ is attained'' would require a Sidon set $B \subset \mathbb{F}_5$
+with $|B| \ge \sqrt{5}$.  Since $|B|$ is a natural number and
+$\sqrt{5} > 2$ (because $2^2 = 4 < 5$), this forces $|B| \ge 3$.
+We show that no $3$-element subset of $\mathbb{F}_5$ is Sidon.
+
+\begin{theorem}
+No $3$-element subset of $\mathbb{F}_5$ is Sidon (under the standard
+ordered-differences reading: all differences $a-b$ with $a \ne b$ are
+pairwise distinct).
+\end{theorem}
+\begin{proof}
+A $3$-set has $3 \cdot 2 = 6$ ordered differences $a-b$ ($a \ne b$), all of
+them nonzero.  But $\mathbb{F}_5^* = \{1,2,3,4\}$ has only $4$ elements, and
+$6 > 4$, so two of the differences must coincide by the pigeonhole
+principle.  Hence no $3$-set can have all pairwise differences distinct.
+\end{proof}
+
+Concretely, all $\binom{5}{3} = 10$ triples were checked exhaustively:
+for example $\{0,1,2\}$ fails because $0-1 = 1-2 = 4$ in $\mathbb{F}_5$.
+An independent brute-force enumeration of all $2^5 = 32$ subsets of
+$\mathbb{F}_5$ finds $16$ Sidon sets (the empty set, $5$ singletons, $10$
+pairs) and confirms the maximum Sidon size is $2 < 3$.
+
+\begin{remark}[The unordered reading]
+Under the weaker unordered reading (differences distinct up to sign), a
+$3$-set would need $3$ distinct sign classes, but
+$\mathbb{F}_5^*/\{\pm 1\}$ has only $2$ classes, so the pigeonhole argument
+refutes that reading too.  Both readings were verified computationally;
+see \texttt{reproduce.py}.
+\end{remark}
+
+\section{Conclusion}
+
+Since attaining $\sqrt{5}$ would require a Sidon set of size at least $3$
+in $\mathbb{F}_5$, and no such set exists, clause~(ii) of the conjecture is
+false at $p = 5$.  The conjecture, being a conjunction, is therefore false.
+(Note: clause~(i) is not refuted at $p = 5$, since $2 \le \sqrt{5}+1$.)
+
+\section{Formalisation}
+
+The finite check is formalised in Lean~4 (see \texttt{lean4/}): with
+$\mathbb{F}_5$ represented as \texttt{Nat} reduced mod~$5$, an executable
+Sidon test \texttt{isSidon}, and a machine-checked completeness result that
+the hand-written list of $10$ triples is exactly the exhaustive enumeration
+of increasing triples from $\{0,\dots,4\}$.  Every theorem is proved by
+\texttt{decide} using core Lean only (\texttt{import Std}, no Mathlib, no
+\texttt{sorry}); \texttt{lake env lean Check.lean} confirms zero axiom
+dependencies.
+
+\end{document}
