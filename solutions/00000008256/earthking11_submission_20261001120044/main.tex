@@ -1,0 +1,132 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+\title{Disproof of conjecture \texttt{00000008256} \\[0.3em]
+  \large The ``exactly seven'' count of maximal Condorcet domains at $n=4$ is false}
+\author{earthking11}
+\date{October 1, 2026}
+
+\begin{document}
+\maketitle
+
+\section{The conjecture}
+
+Conjecture \texttt{00000008256} concerns maximal Condorcet domains for voting
+paradoxes.  Among several sub-claims it asserts (verbatim):
+
+\begin{quote}
+  \textbf{English.} \dots\ the count of maximal domains (the number of maximal
+  domains at $n = 4$) is exactly 7 (a four-alternative seven-domain law) \dots
+\end{quote}
+
+\begin{quote}
+  (The original Chinese statement is quoted verbatim in the accompanying
+  \texttt{README.md}; the PDF carries only the English text.)
+\end{quote}
+
+We refute this sub-claim.  Refuting it falsifies the whole (conjunctive)
+conjecture; the other sub-claims (Fishburn bound formula, white-list tightness
+law, separable-lattice characterization) are not attacked here and are left
+untouched.
+
+\section{Background: Sen's characterization}
+
+A \emph{preference domain} on the alternative set $\{0,1,2,3\}$ is a set of
+linear orders of the alternatives.  It is a \emph{Condorcet domain} if no
+Condorcet paradox can arise, i.e.\ the majority relation is acyclic for every
+profile drawn from the domain.
+
+We use the classical characterization of Sen (1966): a domain $D$ is a
+Condorcet domain if and only if, \emph{for every triple of alternatives}, at
+least one of the nine \emph{never-conditions} holds throughout $D$---namely,
+for some alternative $x$ of the triple, $x$ is never ranked top, never ranked
+middle, or never ranked bottom within that triple by any order of $D$.
+
+\section{Independent enumeration}
+
+Every maximal Condorcet domain is a maximal-by-inclusion intersection of the
+form
+\[
+  \bigcap_T M(T, c_T),
+\]
+where $T$ runs over the four triples of alternatives and $c_T$ over the nine
+never-conditions of $T$ (so $9^4 = 6561$ candidate intersections).  Computing
+these intersections (as bitmasks over the $24$ linear orders) yields $3604$
+distinct intersections; taking the inclusion-maximal ones gives \textbf{495}
+candidate domains.  Each candidate is then re-verified \emph{directly from the
+definition}: it is a Condorcet domain, and adding any of the orders outside it
+destroys the Condorcet property (true maximality, not merely maximality among
+intersections).  All $495$ pass.
+
+As a sanity check, the same program recovers the known count of $9$ maximal
+Condorcet domains at $n=3$, and correctly classifies a Condorcet cycle triple
+as non-Condorcet and a single-peaked domain as Condorcet.
+
+Up to relabelling of the alternatives ($S_4$ action) the $495$ domains fall
+into $31$ isomorphism classes, with size distribution
+$\{4{:}\,6,\ 7{:}\,96,\ 8{:}\,369,\ 9{:}\,24\}$.
+
+\begin{proposition}
+  There are $495$ maximal Condorcet domains on four alternatives.  In
+  particular there are at least $8$ pairwise distinct maximal Condorcet
+  domains, so the number is not $7$.
+\end{proposition}
+
+\begin{remark}[literature counts]
+  The literature reports various classification counts for maximal Condorcet
+  domains (e.g.\ $18$ in some sources), which match neither our total ($495$)
+  nor our $S_4$-orbit count ($31$); those presumably count a subclass or use a
+  coarser equivalence.  This does not affect the refutation: under \emph{any}
+  of the counts $495$, $31$, or $18$, the claim ``exactly $7$'' is false.
+\end{remark}
+
+\begin{remark}[scope]
+  Only the ``exactly $7$'' count sub-claim is refuted here.  We note in passing
+  that the Fishburn-type bound formula stated in the conjecture looks
+  suspicious on its face: at $n=4$ it evaluates to $3$, while the ordinary
+  single-peaked domain on four alternatives already has $8$ orders.  We do not
+  pursue this further.
+\end{remark}
+
+\section{Eight explicit exhibits}
+
+The accompanying \texttt{reproduce.py} prints the following eight domains
+(orders written as strings, e.g.\ \texttt{0312} means $0 \succ 3 \succ 1 \succ
+2$), each verified to be a Condorcet domain, maximal, and pairwise distinct as
+sets:
+
+\begin{center}
+\begin{tabular}{rl}
+  $D_1$ (size 4): & \texttt{0312, 1023, 2130, 3201} \\
+  $D_2$ (size 4): & \texttt{0231, 1320, 2103, 3012} \\
+  $D_3$ (size 4): & \texttt{0213, 1032, 2301, 3120} \\
+  $D_4$ (size 4): & \texttt{0321, 1230, 2013, 3102} \\
+  $D_5$ (size 4): & \texttt{0132, 1203, 2310, 3021} \\
+  $D_6$ (size 4): & \texttt{0123, 1302, 2031, 3210} \\
+  $D_7$ (size 8): & \texttt{2103, 2130, 2301, 2310, 3102, 3120, 3201, 3210} \\
+  $D_8$ (size 8): & \texttt{0132, 0231, 0312, 0321, 2031, 3012, 3021, 3102}
+\end{tabular}
+\end{center}
+
+The Lean~4 formalization (\texttt{lean4/Main.lean}) encodes Sen's test as a
+decidable Boolean function and proves, by \texttt{decide}, for each
+$D_i$: it is a Condorcet domain, and it is maximal (every one of the $24$
+linear orders not in $D_i$ breaks the Condorcet property when added).
+Pairwise distinctness of the eight domains is also decided.  All proofs are
+axiom-free (audited in \texttt{lean4/Check.lean}); eight is greater than
+seven, completing the disproof.
+
+\section*{References}
+\begin{itemize}
+  \item A.\,K.\,Sen, ``A possibility theorem on majority decisions,''
+    \textit{Econometrica} 34 (1966), 491--499 (never-condition characterization
+    of Condorcet domains).
+\end{itemize}
+
+\end{document}
