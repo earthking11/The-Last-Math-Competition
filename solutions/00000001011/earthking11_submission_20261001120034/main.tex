@@ -1,0 +1,105 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+
+\title{Disproof of conjecture \texttt{00000001011} \\ (finite unit-distance cliques)}
+\author{earthking11}
+\date{2026-10-01}
+
+\begin{document}
+\maketitle
+
+\section{The conjecture}
+
+The conjecture (file \texttt{conjectures/00000001011.md}) states:
+
+\begin{quote}
+\textbf{Conjecture.} In $\mathrm{PG}(2,q)$, the maximum clique of the
+unit-distance graph (distance $\sqrt{d}$ for $d$ a quadratic residue of
+$\mathbb{F}_q$) has size $q+1$ (finite unit-distance cliques).
+\end{quote}
+
+We disprove it already at $q=2$, where the maximum clique has size $2<3$.
+
+\section{Modeling the distance}
+
+The parenthetical definition in the conjecture is ambiguous, so we fix the
+most natural reading.  Distances are defined on the affine patch
+$A=\mathbb{F}_q^2$ of $\mathrm{PG}(2,q)$ via the standard quadratic form
+\[
+d(p,q)=(x_1-x_2)^2+(y_1-y_2)^2\in\mathbb{F}_q .
+\]
+``Distance $\sqrt{d}$ for $d$ a quadratic residue'' is read as: the squared
+distance $d$ is a quadratic residue, so that the distance $\sqrt{d}$ exists
+in $\mathbb{F}_q$.  We use the following model.
+
+\begin{itemize}
+\item \textbf{Model A (primary):} distinct points $p\ne q$ are adjacent
+  iff $d(p,q)$ is a \emph{nonzero} quadratic residue of $\mathbb{F}_q$.
+\item Points at infinity have no defined distance and are treated as
+  isolated vertices.  A distance defined by a quadratic form on the affine
+  patch cannot be extended to $\mathrm{PG}(2,q)$ in a projectively invariant
+  way (scaling homogeneous coordinates changes the value of the form), so
+  ``affine patch plus isolated points at infinity'' is the unique natural
+  model.  Isolated vertices cannot raise the clique number, so the
+  computation below is unaffected by this choice.
+\end{itemize}
+
+\section{The counterexample: $q=2$}
+
+For $q=2$, the nonzero quadratic residues of $\mathbb{F}_2$ are
+$\mathrm{QR}(\mathbb{F}_2)=\{1\}$.  The affine patch is
+$\mathbb{F}_2^2=\{(0,0),(0,1),(1,0),(1,1)\}$.
+Distinct points $p,q$ are adjacent iff
+\[
+d(p,q)\equiv (\Delta x)^2+(\Delta y)^2 \equiv 1 \pmod 2 .
+\]
+The six pairs give:
+\begin{center}
+\begin{tabular}{c|c|c}
+pair & $d(p,q)\bmod 2$ & edge? \\ \hline
+$(0,0)$--$(0,1)$ & $1$ & yes \\
+$(0,0)$--$(1,0)$ & $1$ & yes \\
+$(0,0)$--$(1,1)$ & $0$ & no \\
+$(0,1)$--$(1,0)$ & $0$ & no \\
+$(0,1)$--$(1,1)$ & $1$ & yes \\
+$(1,0)$--$(1,1)$ & $1$ & yes
+\end{tabular}
+\end{center}
+Hence the graph is the $4$-cycle
+$(0,0)$--$(0,1)$--$(1,1)$--$(1,0)$--$(0,0)$:
+it has $4$ edges and the two diagonals are non-edges.
+The $\binom{4}{3}=4$ triples are therefore none of them cliques
+(every triple contains a diagonal), so the maximum clique has size
+$2<3=q+1$, contradicting the conjecture.  The full computation is
+independently reproduced by the accompanying \texttt{reproduce.py}
+(pure standard library) and formalized in the Lean~4 project
+(\texttt{lean4/}).
+
+\begin{theorem}
+Under the model above, the unit-distance graph on the affine patch
+$\mathbb{F}_2^2\subset\mathrm{PG}(2,2)$ has maximum clique size $2\ne 3$.
+Hence the conjecture is false.
+\end{theorem}
+
+\section{Remarks}
+
+\begin{enumerate}
+\item The computation extends to $q=3,4,5,7,8,9$: under Model~A the maximum
+  clique is exactly $q$ (the affine line $y=0$ is always a $q$-clique since
+  $(t_1-t_2)^2$ is a nonzero square), never $q+1$.  The conjecture likely
+  confuses an \emph{affine} line ($q$ points) with a \emph{projective} line
+  ($q+1$ points).  We formalize only the $q=2$ instance, which suffices as a
+  disproof; the values for larger $q$ are reported as computational
+  observations, not theorems.
+\item As a robustness check, we also tested the literal reading
+  ``adjacent iff $d(p,q)=1$'' (Model~B): the maximum cliques for
+  $q=2,3,4,5,7,8,9$ are $2,3,2,2,2,2,3$, again never $q+1$.  So the
+  conjecture fails under both natural readings of the distance.
+\end{enumerate}
+
+\end{document}
