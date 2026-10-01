@@ -1,0 +1,131 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+\title{Disproof of conjecture \texttt{00000004227} \\ (flag complex 2-trees vs.\ chromatic polynomial)}
+\author{earthking11}
+\date{2026-10-01}
+
+\begin{document}
+\maketitle
+
+\section{The conjecture}
+
+Conjecture \texttt{00000004227} states (verbatim):
+
+\begin{quote}
+\textbf{English.} Definition: A flag complex is the simplicial complex generated
+by the cliques of a graph. Conjecture: The 2-tree count of a flag complex is
+given by explicit evaluations of the chromatic polynomial of the graph at
+negative integers, with conversion constant 1 and evaluation points the clique
+number minus 2. (flag 2-tree chromatic polynomial conversion)
+\end{quote}
+
+We disprove it with the witness $G = K_4$.  The phrase ``at negative integers''
+admits two natural readings, and the conjecture is false under \emph{both}, so
+the refutation does not depend on how the ambiguity is resolved.
+
+\section{The two readings}
+
+Let $\omega(G)$ denote the clique number and $P_G$ the chromatic polynomial.
+With conversion constant $1$:
+
+\begin{itemize}
+\item \textbf{Reading A} (literal ``evaluation points the clique number
+minus 2''): the 2-tree count equals $P_G(\omega(G) - 2)$.
+\item \textbf{Reading B} (``evaluations \dots\ at negative integers''): the
+2-tree count equals $P_G(-(\omega(G) - 2))$.
+\end{itemize}
+
+Recall Kalai's definition of a $2$-tree of a $2$-dimensional simplicial complex:
+a subcomplex containing the full $1$-skeleton, with exactly $\binom{n-1}{2}$
+triangular faces ($n$ = number of vertices) and $H_2 = 0$.
+
+\section{The witness: $G = K_4$}
+
+The clique number is $\omega(K_4) = 4$, and the chromatic polynomial is the
+standard closed form for complete graphs,
+\[
+P_{K_4}(\lambda) = \lambda(\lambda-1)(\lambda-2)(\lambda-3).
+\]
+Hence
+\[
+\text{reading A predicts } P_{K_4}(2) = 0, \qquad
+\text{reading B predicts } P_{K_4}(-2) = (-2)(-3)(-4)(-5) = 120.
+\]
+Indeed $K_4$ has no proper $2$-coloring (brute force over the $2^4$ colorings),
+which is the computational content of $P_{K_4}(2) = 0$.
+
+The flag complex of $K_4$ is the full $3$-simplex $\Delta_3$: $4$ vertices,
+$6$ edges, and exactly $4$ triangular faces
+$012$, $013$, $023$, $123$.
+
+\section{Reading A is false}
+
+Consider the three triangles
+\[
+T = \{\,012,\ 013,\ 023\,\}.
+\]
+Every one of the $6$ edges $01, 02, 12, 03, 13, 23$ is a $2$-subset of some
+triangle of $T$, so $T$ contains the full $1$-skeleton; $|T| = 3 =
+\binom{4-1}{2}$.  It remains to check $H_2(T) = 0$.
+
+Write a $2$-chain as $c = a\cdot 012 + b\cdot 013 + d\cdot 023$.  With the
+standard orientation $\partial(ijk) = jk - ik + ij$,
+\begin{align*}
+\partial(012) &= 12 - 02 + 01,\\
+\partial(013) &= 13 - 03 + 01,\\
+\partial(023) &= 23 - 03 + 02,
+\end{align*}
+so the boundary $\partial c$ has coefficient $a$ on edge $12$, coefficient
+$b$ on edge $13$, and coefficient $d$ on edge $23$.  Thus $\partial c = 0$
+forces $a = b = d = 0$, i.e.\ every $2$-cycle is trivial and $H_2(T) = 0$.
+
+Hence $T$ is a genuine $2$-tree: the $2$-tree count of the flag complex of
+$K_4$ is at least $1$, while reading A predicts $0$.  \textbf{Reading A is
+false.}
+
+\section{Reading B is false}
+
+Reading B predicts a $2$-tree count of $120$.  But the flag complex has only
+$4$ triangular faces, and a $2$-tree uses exactly $\binom{4-1}{2} = 3$ of them,
+so there are at most $\binom{4}{3} = 4$ candidate face sets (explicitly:
+all four $3$-subsets of $\{012, 013, 023, 123\}$).  Consequently the $2$-tree
+count is at most $4$ --- and a direct enumeration shows it is exactly $4$.
+
+Since $120 > 4$, \textbf{reading B is false} --- under \emph{any} definition of
+``2-tree'', because no definition can produce more $2$-trees than there are
+subsets of triangular faces ($2^4 = 16 < 120$).
+
+\section{Remarks}
+
+\begin{itemize}
+\item The conversion constant is $1$, so no rescaling or sign change can rescue
+either reading: $0 \ne 4$ and $120 \ne 4$.
+\item The $2$-tree count here is $4$, not $16$: Kalai's count for the
+$3$-simplex is $4^{\binom{2}{2}} = 4$, consistent with the brute-force
+enumeration over the $\binom{4}{3} = 4$ candidates.
+\item The refutation is fully computational: the accompanying
+\texttt{reproduce.py} independently re-verifies every numerical claim above
+(exit $0$), and the \texttt{lean4/} project formalises the finite checks
+($P(2) = 0$, $P(-2) = 120$, no proper $2$-coloring, the witness's $1$-skeleton
+coverage and face count, $H_2 = 0$ by the read-off above, and the four
+candidate face sets) in Lean~4 with an axiom-clean audit.
+\end{itemize}
+
+\section{Conclusion}
+
+\begin{theorem}
+Conjecture \texttt{00000004227} is false.  For $G = K_4$, the $2$-tree count of
+its flag complex is $4$, whereas the conjectured formula gives $0$ under
+reading~A and $120$ under reading~B.
+\end{theorem}
+
+\end{document}
